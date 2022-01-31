@@ -62,7 +62,7 @@ Grille = Grille.transpose()  # pour avoir x,y
 # VOTRE CODE ICI
 
 
-def win():
+def end():
     dd = 0
     dg = 0
     for i in range(len(Grille)):
@@ -71,8 +71,7 @@ def win():
                           ], np.ones(3)): return 1
         if Grille[i][i] == 1: dd += 1
         if Grille[len(Grille) - 1 - i][i] == 1: dg += 1
-    if dg == 3: return 1
-    if dd == 3: return 1
+    if dg == 3 or dd == 3: return 1
 
     dd = 0
     dg = 0
@@ -82,8 +81,7 @@ def win():
                           ], np.full(3, 2)): return 2
         if Grille[i][i] == 2: dd += 1
         if Grille[len(Grille) - 1 - i][i] == 2: dg += 1
-    if dg == 3: return 2
-    if dd == 3: return 2
+    if dg == 3 or dd == 3: return 2
 
     if np.array_equal(np.where(Grille == 2, 1, Grille), np.ones(Grille.shape)):
         return 3
@@ -104,6 +102,38 @@ def PlayIA():
         y = random.randrange(len(Grille))
     Grille[x][y] = 2
     Dessine()
+
+
+def SimulateIA():
+    global Grille, Score_IA, Score_P
+
+    if end() != 0: return str(Score_P) + "/" + str(Score_IA)
+
+    L = [(x, y) for x in range(len(Grille)) for y in range(len(Grille)) if Grille[x][y] != 0]
+    Result = []
+
+    for K in L:
+        Grille[k] = 2
+        R = SimulateP()
+        Result.append([R, K])
+        Grille[k] = 0
+    arg = np.argwhere(Result == 2)
+
+
+def SimulateP():
+    global Grille, Score_IA, Score_P
+
+    if end() != 0: return str(Score_P) + "/" + str(Score_IA)
+
+    L = [(x, y) for x in range(len(Grille)) for y in range(len(Grille)) if Grille[x][y] != 0]
+    Result = []
+
+    for K in L:
+        Grille[k] = 1
+        R = SimulateP()
+        Result.append((R, K))
+        Grille[k] = 0
+    return
 
 
 ################################################################################
@@ -135,15 +165,19 @@ def Dessine(PartieGagnee=0):
             if (Grille[x][y] == 2):
                 canvas.create_oval(xc + 10, yc + 10, xc + 90, yc + 90, outline="yellow", width="4")
 
+    canvas.create_text(LARG - 20, HAUT - 10, text=str(Score_P) + "/" + str(Score_IA), fill="yellow")
+
 
 ####################################################################################
 #
 #  fnt appelée par un clic souris sur la zone de dessin
 Begin = True
+Score_IA = 0
+Score_P = 0
 
 
 def MouseClick(event):
-    global Begin, Grille
+    global Begin, Grille, Score_IA, Score_P
     if Begin == True:
         Grille = np.zeros((3, 3))
         Dessine()
@@ -154,14 +188,16 @@ def MouseClick(event):
     if ((x < 0) or (x > 2) or (y < 0) or (y > 2)): return
     if Grille[x][y] == 1 or Grille[x][y] == 2: return
     PlayP(x, y)  # gestion du joueur humain
-    if win() == 1:
+    if end() != 0:
         Begin = True
-        Dessine((win()))
+        Score_P += 1 if end() == 1 else 0
+        Dessine((end()))
     else:
         PlayIA()
-        if win() == 2:
+        if end() != 0:
             Begin = True
-            Dessine(win())
+            Score_IA += 1 if end() == 2 else 0
+            Dessine(end())
 
 
 canvas.bind('<ButtonPress-1>', MouseClick)

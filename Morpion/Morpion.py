@@ -109,7 +109,7 @@ def SimulateIA():
 
     if end() != 0: return str(Score_P) + "/" + str(Score_IA)
 
-    L = [(x, y) for x in range(len(Grille)) for y in range(len(Grille)) if Grille[x][y] != 0]
+    L = [(x, y) for x in range(len(Grille)) for y in range(len(Grille)) if Grille[x][y] == 0]
     Result = []
 
     for K in L:
@@ -117,7 +117,7 @@ def SimulateIA():
         R = SimulateP()
         Result.append([R, K])
         Grille[k] = 0
-    arg = np.argwhere(Result == 2)
+    return
 
 
 def SimulateP():
@@ -125,14 +125,16 @@ def SimulateP():
 
     if end() != 0: return str(Score_P) + "/" + str(Score_IA)
 
-    L = [(x, y) for x in range(len(Grille)) for y in range(len(Grille)) if Grille[x][y] != 0]
+    L = [(x, y) for x in range(len(Grille)) for y in range(len(Grille)) if Grille[x][y] == 0]
     Result = []
 
     for K in L:
         Grille[k] = 1
         R = SimulateP()
-        Result.append((R, K))
+        Result.append([R, K])
         Grille[k] = 0
+    arg = np.argwhere(Result[:,1] == 1)
+    if np.array_equal(arg, []): arg = np.argwhere(Result[:,1] == 1)
     return
 
 

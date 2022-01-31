@@ -1,6 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox
-import random
+
 import numpy as np
 
 ###############################################################################
@@ -10,9 +9,8 @@ LARG = 300
 HAUT = 300
 
 Window = tk.Tk()
-Window.geometry(str(LARG)+"x"+str(HAUT))   # taille de la fenetre
+Window.geometry(str(LARG) + "x" + str(HAUT))  # taille de la fenetre
 Window.title("ESIEE - Morpion")
-
 
 # création de la frame principale stockant toutes les pages
 
@@ -23,8 +21,9 @@ F.grid_columnconfigure(0, weight=1)
 
 # gestion des différentes pages
 
-ListePages  = {}
+ListePages = {}
 PageActive = 0
+
 
 def CreerUnePage(id):
     Frame = tk.Frame(F)
@@ -32,85 +31,95 @@ def CreerUnePage(id):
     Frame.grid(row=0, column=0, sticky="nsew")
     return Frame
 
+
 def AfficherPage(id):
     global PageActive
     PageActive = id
     ListePages[id].tkraise()
-    
+
+
 Frame0 = CreerUnePage(0)
 
-canvas = tk.Canvas(Frame0,width = LARG, height = HAUT, bg ="black" )
-canvas.place(x=0,y=0)
-
+canvas = tk.Canvas(Frame0, width=LARG, height=HAUT, bg="black")
+canvas.place(x=0, y=0)
 
 #################################################################################
 #
 #  Parametres du jeu
- 
-Grille = [ [0,0,1], 
-           [2,0,0], 
-           [0,0,0] ]  # attention les lignes représentent les colonnes de la grille
-           
+
+Grille = [[0, 0, 1],
+          [2, 0, 0],
+          [0, 0, 0]]  # attention les lignes représentent les colonnes de la grille
+
 Grille = np.array(Grille)
 Grille = Grille.transpose()  # pour avoir x,y
-           
-  
+
 
 ###############################################################################
 #
 # gestion du joueur humain et de l'IA
-# VOTRE CODE ICI 
+# VOTRE CODE ICI
+def win():
+    dd = 0
+    dg = 0
+    for i in range(len(Grille)):
+        if all(Grille[i, :]) == all([1, 1, 1]): Dessine(True)
+        if all(Grille[:, i]) == all([1, 1, 1]): Dessine(True)
+        if Grille[i][i] == 1: dd += 1
+        if Grille[len(Grille) - 1 - i][i] == 1: dg += 1
+    if dg == 3: Dessine(True)
+    if dd == 3: Dessine(True)
 
-def Play(x,y):             
+
+def Play(x, y):
     Grille[x][y] = 1
-   
-          
-    
-    
+
+
 ################################################################################
 #    
 # Dessine la grille de jeu
 
-def Dessine(PartieGagnee = False):
-        ## DOC canvas : http://tkinter.fdex.eu/doc/caw.html
-        canvas.delete("all")
-        
+def Dessine(PartieGagnee=False):
+    ## DOC canvas : http://tkinter.fdex.eu/doc/caw.html
+    canvas.delete("all")
+    if PartieGagnee == False:
         for i in range(4):
-            canvas.create_line(i*100,0,i*100,300,fill="blue", width="4" )
-            canvas.create_line(0,i*100,300,i*100,fill="blue", width="4" )
-            
-        for x in range(3):
-            for y in range(3):
-                xc = x * 100 
-                yc = y * 100 
-                if ( Grille[x][y] == 1):
-                    canvas.create_line(xc+10,yc+10,xc+90,yc+90,fill="red", width="4" )
-                    canvas.create_line(xc+90,yc+10,xc+10,yc+90,fill="red", width="4" )
-                if ( Grille[x][y] == 2):
-                    canvas.create_oval(xc+10,yc+10,xc+90,yc+90,outline="yellow", width="4" )
-        
-       
-        
-  
+            canvas.create_line(i * 100, 0, i * 100, 300, fill="blue", width="4")
+            canvas.create_line(0, i * 100, 300, i * 100, fill="blue", width="4")
+    if PartieGagnee == True:
+        for i in range(4):
+            canvas.create_line(i * 100, 0, i * 100, 300, fill="red", width="4")
+            canvas.create_line(0, i * 100, 300, i * 100, fill="red", width="4")
+
+    for x in range(3):
+        for y in range(3):
+            xc = x * 100
+            yc = y * 100
+            if (Grille[x][y] == 1):
+                canvas.create_line(xc + 10, yc + 10, xc + 90, yc + 90, fill="red", width="4")
+                canvas.create_line(xc + 90, yc + 10, xc + 10, yc + 90, fill="red", width="4")
+            if (Grille[x][y] == 2):
+                canvas.create_oval(xc + 10, yc + 10, xc + 90, yc + 90, outline="yellow", width="4")
+
+
 ####################################################################################
 #
 #  fnt appelée par un clic souris sur la zone de dessin
 
 def MouseClick(event):
-   
     Window.focus_set()
     x = event.x // 100  # convertit une coordonée pixel écran en coord grille de jeu
     y = event.y // 100
-    if ( (x<0) or (x>2) or (y<0) or (y>2) ) : return
-     
-    
-    print("clicked at", x,y)
-    
-    Play(x,y)  # gestion du joueur humain et de l'IA
-    
+    if ((x < 0) or (x > 2) or (y < 0) or (y > 2)): return
+
+    print("clicked at", x, y)
+
+    Play(x, y)  # gestion du joueur humain et de l'IA
+    win()
     Dessine()
-    
-canvas.bind('<ButtonPress-1>',    MouseClick)
+
+
+canvas.bind('<ButtonPress-1>', MouseClick)
 
 #####################################################################################
 #
@@ -119,14 +128,3 @@ canvas.bind('<ButtonPress-1>',    MouseClick)
 AfficherPage(0)
 Dessine()
 Window.mainloop()
-
-
-  
-
-
-    
-        
-
-      
- 
-

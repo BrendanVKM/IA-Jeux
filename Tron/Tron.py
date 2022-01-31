@@ -148,7 +148,7 @@ def Play(Game):
     if len(L) == 0:
         return True
 
-    CoupFuture(Game, 30000)
+    CoupFuture(Game, 10000)
 
 
 ################################################################################
@@ -187,6 +187,7 @@ def Simulate(Game, nb):
         Tailles[Tailles == 0] = 1
         R = np.random.randint(Tailles)
 
+
         G[I, X, Y] = 2
 
         Choix = np.ones(nb, dtype=np.uint32) * LPossibles[I, R]
@@ -195,11 +196,10 @@ def Simulate(Game, nb):
         DY = dy[Choix]
         X += DX
         Y += DY
-        S += np.where(Choix != 0, 1, Choix)
+        S += ds[Choix]
         # debug
         if (np.array_equal(S, SI)): boucle = False
-
-    return np.mean(S)
+    return sum(S)
 
 
 def SimulationPartie(Game):
@@ -228,10 +228,11 @@ def CoupFuture(Game, NbParties):
     L = PossibleMove(Game)
     moy = []
     x, y = Game.PlayerX, Game.PlayerY
-    Game2 = Game.copy()
     for i in L:
+        Game2 = Game.copy()
         Game2.PlayerX += i[0]
         Game2.PlayerY += i[1]
+        Game2.Grille[Game2.PlayerX, Game2.PlayerY] = 2
         moy.append(Simulate(Game2, NbParties))
     ind = L[moy.index(max(moy))]
     Game.Grille[x, y] = 2

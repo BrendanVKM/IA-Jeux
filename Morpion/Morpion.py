@@ -94,46 +94,58 @@ def PlayP(x, y):
 
 def PlayIA():
     global Grille
-    SimulateIA()
-    x = random.randrange(len(Grille))
-    y = random.randrange(len(Grille))
-    while Grille[x][y] == 1 or Grille[x][y] == 2:
-        x = random.randrange(len(Grille))
-        y = random.randrange(len(Grille))
-    Grille[x][y] = 2
+    Grille[SimulateIA()[1][0]][SimulateIA()[1][1]] = 2
     Dessine()
 
 
 def SimulateIA():
-    global Grille, Score_IA, Score_P
-
-    if end() != 0: return end()
+    global Grille
+    if end != 0:
+        if end() == 2:
+            return ("IA", None)
+        elif end() == 1:
+            return ("GO", None)
 
     L = [(x, y) for x in range(len(Grille)) for y in range(len(Grille)) if Grille[x][y] == 0]
     Result = []
-
+    g = "IA"
     for K in L:
         Grille[K[0]][K[1]] = 2
         R = SimulateP()
-        Result.append([R, K])
+        if g == "IA":
+            g = R[0]
+            Result.append((g, K))
+        elif g == "GO":
+            if R[0] == "P":
+                g = R[0]
+                Result.append((g, K))
         Grille[K[0]][K[1]] = 0
-    return
+    return Result[-1]
 
 
 def SimulateP():
-    global Grille, Score_IA, Score_P
-
-    if end() != 0: return end()
+    global Grille
+    if end != 0:
+        if end() == 2:
+            return ("J", None)
+        elif end() == 1:
+            return ("GO", None)
 
     L = [(x, y) for x in range(len(Grille)) for y in range(len(Grille)) if Grille[x][y] == 0]
     Result = []
-
+    g = "P"
     for K in L:
-        Grille[K[0]][K[1]] = 1
+        Grille[K[0]][K[1]] = 2
         R = SimulateP()
-        Result.append([R, K])
+        if g == "P":
+            g = R[0]
+            Result.append((g, K))
+        elif g == "GO":
+            if R[0] == "IA":
+                g = R[0]
+                Result.append((g, K))
         Grille[K[0]][K[1]] = 0
-    return end()
+    return Result[-1]
 
 
 ################################################################################
@@ -193,7 +205,9 @@ def MouseClick(event):
         Score_P += 1 if end() == 1 else 0
         Dessine((end()))
     else:
-        PlayIA()
+        r = SimulateIA()
+        L = r[1]
+        Grille[L[0]][L[1]] = 2
         if end() != 0:
             Begin = True
             Score_IA += 1 if end() == 2 else 0

@@ -1,7 +1,6 @@
+import numpy as np
 import random
 import tkinter as tk
-
-import numpy as np
 
 ###############################################################################
 # création de la fenetre principale  - ne pas toucher
@@ -95,6 +94,7 @@ def PlayP(x, y):
 
 def PlayIA():
     global Grille
+    SimulateIA()
     x = random.randrange(len(Grille))
     y = random.randrange(len(Grille))
     while Grille[x][y] == 1 or Grille[x][y] == 2:
@@ -107,35 +107,33 @@ def PlayIA():
 def SimulateIA():
     global Grille, Score_IA, Score_P
 
-    if end() != 0: return str(Score_P) + "/" + str(Score_IA)
+    if end() != 0: return end()
 
     L = [(x, y) for x in range(len(Grille)) for y in range(len(Grille)) if Grille[x][y] == 0]
     Result = []
 
     for K in L:
-        Grille[k] = 2
+        Grille[K[0]][K[1]] = 2
         R = SimulateP()
         Result.append([R, K])
-        Grille[k] = 0
+        Grille[K[0]][K[1]] = 0
     return
 
 
 def SimulateP():
     global Grille, Score_IA, Score_P
 
-    if end() != 0: return str(Score_P) + "/" + str(Score_IA)
+    if end() != 0: return end()
 
     L = [(x, y) for x in range(len(Grille)) for y in range(len(Grille)) if Grille[x][y] == 0]
     Result = []
 
     for K in L:
-        Grille[k] = 1
+        Grille[K[0]][K[1]] = 1
         R = SimulateP()
         Result.append([R, K])
-        Grille[k] = 0
-    arg = np.argwhere(Result[:,1] == 1)
-    if np.array_equal(arg, []): arg = np.argwhere(Result[:,1] == 1)
-    return
+        Grille[K[0]][K[1]] = 0
+    return end()
 
 
 ################################################################################

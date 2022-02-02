@@ -203,20 +203,13 @@ def JoueurSimuleHumain():
 #
 # Dessine la grille de jeu
 
-def Dessine(PartieGagnee=0):
+def Dessine(PartieGagnee=False):
     ## DOC canvas : http://tkinter.fdex.eu/doc/caw.html
     canvas.delete("all")
-    color = "blue"
-    if PartieGagnee == 1:
-        color = "red"
-    elif PartieGagnee == 2:
-        color = "yellow"
-    elif PartieGagnee == 3:
-        color = "white"
 
     for i in range(4):
-        canvas.create_line(i * 100, 0, i * 100, 300, fill=color, width="4")
-        canvas.create_line(0, i * 100, 300, i * 100, fill=color, width="4")
+        canvas.create_line(i * 100, 0, i * 100, 300, fill=couleur, width="4")
+        canvas.create_line(0, i * 100, 300, i * 100, fill=couleur, width="4")
 
     for x in range(3):
         for y in range(3):
@@ -227,8 +220,6 @@ def Dessine(PartieGagnee=0):
                 canvas.create_line(xc + 90, yc + 10, xc + 10, yc + 90, fill="red", width="4")
             if (Grille[x][y] == 2):
                 canvas.create_oval(xc + 10, yc + 10, xc + 90, yc + 90, outline="yellow", width="4")
-
-    canvas.create_text(LARG - 20, HAUT - 10, text=str(Score_P) + "/" + str(Score_IA), fill="yellow")
 
 
 ####################################################################################
@@ -257,31 +248,28 @@ def MouseClick(event):
         return
 
     Grille[x][y] = 1
+    couleur = "blue"
     Dessine()
     print("Joué")
 
     if finpartie():
+        couleur = "white"
         if WIN():
             score_joueur += 1
             couleur = "red"
-        else:
-            couleur = "white"
         debut_partie = True
     else:
         r = JoueurSimuleIA()
         L = r[1]
         Grille[L[0]][L[1]] = 2
-        Dessine()
         if finpartie():
+            couleur = "white"
             if WIN():
                 score_IA += 1
                 couleur = "yellow"
-            else:
-                couleur = "white"
             debut_partie = True
+        Dessine()
 
-    print(score_joueur)
-    print(score_IA)
 
 
 canvas.bind('<ButtonPress-1>', MouseClick)

@@ -160,7 +160,6 @@ def JoueurSimuleIA():
     a = "j"
     for K in L:
         Grille[K[0]][K[1]] = 2
-        # print(results)
         R = JoueurSimuleHumain()
         if a == "j":
             a = R[0]
@@ -186,7 +185,6 @@ def JoueurSimuleHumain():
     a = "ia"
     for K in L:
         Grille[K[0]][K[1]] = 1
-        # print(results)
         R = JoueurSimuleIA()
         if a == "ia":
             a = R[0]
@@ -220,6 +218,7 @@ def Dessine(PartieGagnee=False):
                 canvas.create_line(xc + 90, yc + 10, xc + 10, yc + 90, fill="red", width="4")
             if (Grille[x][y] == 2):
                 canvas.create_oval(xc + 10, yc + 10, xc + 90, yc + 90, outline="yellow", width="4")
+    canvas.create_text(LARG - 20, HAUT - 10, text=str(score_joueur) + "/" + str(score_IA), fill="yellow")
 
 
 ####################################################################################
@@ -242,7 +241,6 @@ def MouseClick(event):
     y = event.y // 100
     if ((x < 0) or (x > 2) or (y < 0) or (y > 2)): return
 
-    print("clicked at", x, y)
 
     if not (Play(x, y)):
         return
@@ -250,7 +248,6 @@ def MouseClick(event):
     Grille[x][y] = 1
     couleur = "blue"
     Dessine()
-    print("Joué")
 
     if finpartie():
         couleur = "white"

@@ -70,7 +70,8 @@ class Tetromino:
         return self.form
 
     def ClockWise(self):
-        self.form = [np.flip(self.form[0:-1], 0).transpose().tolist(), self.form[-1]]
+        self.form = [
+            np.flip(self.form[0:-1], 0).transpose().tolist(), self.form[-1]]
 
     def LenRow(self):
         return len(self.view()[0])
@@ -192,6 +193,8 @@ def AfficheScore(Game):
 # VOTRE CODE ICI
 
 def Play(Game):
+    SpawnTetro(Game)
+    return True
     pass
 
 
@@ -200,10 +203,10 @@ def Play(Game):
 CurrentGame = GameInit.copy()
 
 
-def SpawnTetro():
+def SpawnTetro(Game):
     tetro = Tetromino().view()
-    Data[0][LARGEUR//2-2:LARGEUR//2+2] = tetro[0]
-    Data[1][LARGEUR//2-2:LARGEUR//2+2] = tetro[1]
+    Game.Grille[0][LARGEUR//2-2:LARGEUR//2+2] = tetro[0]
+    Game.Grille[0][LARGEUR//2-2:LARGEUR//2+2] = tetro[1]
 
 
 def MoveTetro():

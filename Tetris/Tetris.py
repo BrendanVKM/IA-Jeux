@@ -1,4 +1,5 @@
 import copy
+import random
 import tkinter as tk
 
 import numpy as np
@@ -7,59 +8,75 @@ import numpy as np
 #
 #   Données de partie
 
-Data = [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+Data = [[8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+        [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]]
 
 
 class Tetromino:
     form = []
 
-    def __init__(self, Tetro):
+    def __init__(self, Tetro=None):
+        I = [[1, 1, 1, 1],
+             [0, 0, 0, 0]]
+        O = [[0, 2, 2, 0],
+             [0, 2, 2, 0]]
+        T = [[3, 3, 3, 0],
+             [0, 3, 0, 0]]
+        J = [[4, 4, 4, 0],
+             [0, 0, 4, 0]]
+        L = [[5, 5, 5, 0],
+             [5, 0, 0, 0]]
+        S = [[0, 6, 6, 0],
+             [6, 6, 0, 0]]
+        Z = [[7, 7, 0, 0],
+             [0, 7, 7, 0]]
         if Tetro == 'I':
-            self.form = [[2, 2, 2, 2]]
+            self.form = I
         elif Tetro == 'O':
-            self.form = [[3, 3],
-                         [3, 3]]
+            self.form = O
         elif Tetro == 'T':
-            self.form = [[4, 4, 4],
-                         [0, 4, 0]]
+            self.form = T
         elif Tetro == 'J':
-            self.form = [[5, 5, 5],
-                         [0, 0, 5]]
+            self.form = J
         elif Tetro == 'L':
-            self.form = [[6, 6, 6],
-                         [6, 0, 0]]
+            self.form = L
         elif Tetro == 'S':
-            self.form = [[0, 7, 7],
-                         [7, 7, 0]]
+            self.form = S
         elif Tetro == 'Z':
-            self.form = [[8, 8, 0],
-                         [0, 8, 8]]
+            self.form = Z
+        else:
+            self.form = random.choice([I, O, T, J, L, S, Z])
 
-    def show(self):
+    def view(self):
         return self.form
 
     def ClockWise(self):
         self.form = [np.flip(self.form[0:-1], 0).transpose().tolist(), self.form[-1]]
+
+    def LenRow(self):
+        return len(self.view()[0])
+
+    def LenCol(self):
+        return len(self.show()[1])
 
 
 GInit = np.array(Data, dtype=np.int8)
@@ -142,21 +159,21 @@ def Affiche(Game):
 
     for x in range(LARGEUR):
         for y in range(HAUTEUR):
-            if Game.Grille[x, y] == 1:
-                DrawCase(x, y, "gray")
-            if Game.Grille[x, y] == 2:
-                DrawCase(x, y, "#00ffff")
-            if Game.Grille[x, y] == 3:
-                DrawCase(x, y, "#ffff00")
-            if Game.Grille[x, y] == 4:
-                DrawCase(x, y, "#800080")
-            if Game.Grille[x, y] == 5:
-                DrawCase(x, y, "#0000ff")
-            if Game.Grille[x, y] == 6:
-                DrawCase(x, y, "#ff7f00")
-            if Game.Grille[x, y] == 7:
-                DrawCase(x, y, "#00ff00")
             if Game.Grille[x, y] == 8:
+                DrawCase(x, y, "gray")
+            if Game.Grille[x, y] == 1:
+                DrawCase(x, y, "#00ffff")
+            if Game.Grille[x, y] == 2:
+                DrawCase(x, y, "#ffff00")
+            if Game.Grille[x, y] == 3:
+                DrawCase(x, y, "#800080")
+            if Game.Grille[x, y] == 4:
+                DrawCase(x, y, "#0000ff")
+            if Game.Grille[x, y] == 5:
+                DrawCase(x, y, "#ff7f00")
+            if Game.Grille[x, y] == 6:
+                DrawCase(x, y, "#00ff00")
+            if Game.Grille[x, y] == 7:
                 DrawCase(x, y, "#ff0000")
 
     # dessin de la moto
@@ -183,11 +200,10 @@ def Play(Game):
 CurrentGame = GameInit.copy()
 
 
-def SpownTetro():
-    all_form = [Tetromino('I'), Tetromino('O'), Tetromino('J'), Tetromino('L'), Tetromino('T'), Tetromino('S'),
-                Tetromino('Z')]
-    tetro = random.choice(all_form)
-    tetros
+def SpawnTetro():
+    tetro = Tetromino().view()
+    Data[0][LARGEUR//2-2:LARGEUR//2+2] = tetro[0]
+    Data[1][LARGEUR//2-2:LARGEUR//2+2] = tetro[1]
 
 
 def MoveTetro():

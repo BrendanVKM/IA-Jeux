@@ -79,7 +79,7 @@ class Tetromino:
 GInit = np.array(Data, dtype=np.int8)
 GInit = np.flip(GInit, 0).transpose()
 LARGEUR = 12
-HAUTEUR = 22
+HAUTEUR = 21
 
 
 # container pour passer efficacement toutes les données de la partie
@@ -155,7 +155,7 @@ def Affiche(Game):
     # dessin des murs
 
     for x in range(LARGEUR):
-        for y in range(HAUTEUR):
+        for y in range(HAUTEUR-1):
             if Game.Grille[x, y] == 8:
                 DrawCase(x, y, "gray")
             if Game.Grille[x, y] == 1:

@@ -33,20 +33,19 @@ Data = [[8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
 
 class Tetromino:
     def __init__(self, Tetro=None):
-        I = [[1, 1, 1, 1],
-             [0, 0, 0, 0]]
-        O = [[0, 2, 2, 0],
-             [0, 2, 2, 0]]
-        T = [[3, 3, 3, 0],
-             [0, 3, 0, 0]]
-        J = [[4, 4, 4, 0],
-             [0, 0, 4, 0]]
-        L = [[5, 5, 5, 0],
-             [5, 0, 0, 0]]
-        S = [[0, 6, 6, 0],
-             [6, 6, 0, 0]]
-        Z = [[7, 7, 0, 0],
-             [0, 7, 7, 0]]
+        I = [[1, 1, 1, 1]]
+        O = [[2, 2],
+             [2, 2]]
+        T = [[3, 3, 3],
+             [0, 3, 0]]
+        J = [[4, 4, 4],
+             [0, 0, 4]]
+        L = [[5, 5, 5],
+             [5, 0, 0]]
+        S = [[0, 6, 6],
+             [6, 6, 0]]
+        Z = [[7, 7, 0],
+             [0, 7, 7]]
         if Tetro == 'I':
             self.form = I
         elif Tetro == 'O':
@@ -62,24 +61,30 @@ class Tetromino:
         elif Tetro == 'Z':
             self.form = Z
         else:
-            self.form = random.choice([I, O, T, J, L, S, Z])
-        self.x0, self.x1 = 12 // 2 - 1, 12 // 2
-        self.y0, self.y1 = 22 - 5, 22 - 1
+            self.__init__(random.choice(['I', 'O', 'T', 'J', 'L', 'S', 'Z']))
+        self.x0, self.x1 = 12 // 2 - len(self.form) + 1, 12 // 2 + 1
+        self.y0, self.y1 = 22 - len(self.form[0]) - 1, 22 - 1
 
     def rotate(self):
         self.form = np.flip(self.form, 0).transpose()
+        x2, y2 = (self.x0 + self.x1) // 2, (self.y0 + self.y1) // 2
+        l0, l1 = len(self.form) // 2, len(self.form[0]) // 2
+        self.x0, self.x1 = x2 - len(self.form) + 1, x2 + 1
+        self.y0, self.y1 = y2 - len(self.form[0]) - 1, y2 - 1
 
-    def LenRow(self):
-        return len(self.form[0])
+    def left(self):
+        self.x0 -= 1
+        self.x1 -= 1
 
-    def LenCol(self):
-        return len(self.form[1])
+    def right(self):
+        self.x0 += 1
+        self.x1 += 1
 
 
 GInit = np.array(Data, dtype=np.int8)
 GInit = np.flip(GInit, 0).transpose()
 LARGEUR = 12
-HAUTEUR = 22
+HAUTEUR = 21
 
 
 # container pour passer efficacement toutes les données de la partie
@@ -187,26 +192,20 @@ def AfficheScore(Game):
 # gestion du joueur IA
 
 # VOTRE CODE ICI
-tetro = Tetromino()
 
 
-def Play(Game, tetro, y):
-    print(y)
-    if y == HAUTEUR - 15:
-        Affiche(CurrentGame)
-        return True
+def Play(Game, tetro):
     x0, x1 = tetro.x0, tetro.x1
-    y0, y1 = tetro.y0 - y, tetro.y1 - y
-    Game.Grille[x0][y0:y1] = [0, 0, 0, 0]
-    Game.Grille[x1][y0:y1] = [0, 0, 0, 0]
-    Game.Grille[x0][y0:y1] = tetro.form[0]
-    Game.Grille[x1][y0:y1] = tetro.form[1]
-    tetro.y0 -= y
-    tetro.y1 -= y
-    Affiche(CurrentGame)
-    y += 1
-    time.sleep(1)
-    Play(Game, tetro, y)
+    y0, y1 = tetro.y0, tetro.y1
+    if y0 == 1:
+        return True
+    Game.Grille[x0:x1, y0:y1] = np.zeros(np.shape(tetro.form))
+    y0 -= 1
+    y1 -= 1
+    Game.Grille[x0:x1, y0:y1] = tetro.form
+    tetro.y0 -= 1
+    tetro.y1 -= 1
+    Play(Game, tetro)
 
 
 ################################################################################
@@ -218,8 +217,11 @@ def Line(Game):
     pass
 
 
+tetro = Tetromino()
+
+
 def Partie():
-    PartieTermine = Play(CurrentGame, tetro, 0)
+    PartieTermine = Play(CurrentGame, tetro)
     if not PartieTermine:
         Affiche(CurrentGame)
 

@@ -33,7 +33,11 @@ Data = [[8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
 
 class Tetromino:
     def __init__(self, Tetro=None):
-        I = [[1, 1, 1, 1]]
+        self.type = Tetro
+        I = [[1],
+             [1],
+             [1],
+             [1]]
         O = [[2, 2],
              [2, 2]]
         T = [[3, 3, 3],
@@ -197,15 +201,20 @@ def AfficheScore(Game):
 def Play(Game, tetro):
     x0, x1 = tetro.x0, tetro.x1
     y0, y1 = tetro.y0, tetro.y1
-    if y0 == 1:
-        return True
+
+    if y0 == 1: return True
+    for (r, r1) in zip(Game.Grille[x0:x1, y0], Game.Grille[x0:x1, y0 - 1]):
+        if r1 != 0 and r != 0:
+            return True
     Game.Grille[x0:x1, y0:y1] = np.zeros(np.shape(tetro.form))
     y0 -= 1
     y1 -= 1
-    Game.Grille[x0:x1, y0:y1] = tetro.form
+    Game.Grille[x0:x1, y0:y1] = np.where(Game.Grille[x0:x1, y0:y1]== 0,tetro.form,Game.Grille[x0:x1, y0:y1])
     tetro.y0 -= 1
     tetro.y1 -= 1
-    Play(Game, tetro)
+    x0, x1 = tetro.x0, tetro.x1
+    y0, y1 = tetro.y0, tetro.y1
+    #Play(Game, tetro)
 
 
 ################################################################################
@@ -217,14 +226,28 @@ def Line(Game):
     pass
 
 
-tetro = Tetromino()
+type = ''
+tetro = Tetromino('')
+
+def keydown(e):
+    global tetro, CurrentGame
+    CurrentGame.Grille[tetro.x0:tetro.x1, tetro.y0:tetro.y1] = np.zeros(np.shape(tetro.form))
+    if e.char == 'w':
+        tetro.rotate()
+    if e.char == 'a':
+        tetro.left()
+    if e.char == 'd':
+        tetro.right()
 
 
 def Partie():
+    global type, tetro
+    #while tetro.type == type: tetro = Tetromino()
+    type = tetro.type
     PartieTermine = Play(CurrentGame, tetro)
     if not PartieTermine:
         Affiche(CurrentGame)
-
+        Play(CurrentGame, tetro)
         # rappelle la fonction Partie() dans 30ms
         # entre temps laisse l'OS réafficher l'interface
         Window.after(500, Partie)
@@ -235,7 +258,7 @@ def Partie():
 #####################################################################################
 #
 #  Mise en place de l'interface - ne pas toucher
-
+Window.bind("<KeyPress>", keydown)
 AfficherPage(0)
 Window.after(50, Partie)
 Window.mainloop()

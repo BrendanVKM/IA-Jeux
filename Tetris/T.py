@@ -33,11 +33,15 @@ Data = [[8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
 
 class Tetromino:
     def __init__(self, Tetro=None):
+<<<<<<< HEAD:Tetris/T.py
         self.type = Tetro
         I = [[1],
              [1],
              [1],
              [1]]
+=======
+        I = [[1, 1, 1, 1]]
+>>>>>>> 7814518cf516fd827645eb68666e57c52989131c:Tetris/Tetris.py
         O = [[2, 2],
              [2, 2]]
         T = [[3, 3, 3],
@@ -199,6 +203,7 @@ def AfficheScore(Game):
 
 
 def Play(Game, tetro):
+<<<<<<< HEAD:Tetris/T.py
     x0, x1 = tetro.x0, tetro.x1
     y0, y1 = tetro.y0, tetro.y1
 
@@ -215,6 +220,19 @@ def Play(Game, tetro):
     x0, x1 = tetro.x0, tetro.x1
     y0, y1 = tetro.y0, tetro.y1
     #Play(Game, tetro)
+=======
+    x0, x1 = tetro.x0, tetro.x1
+    y0, y1 = tetro.y0, tetro.y1
+    if y0 == 1:
+        return True
+    Game.Grille[x0:x1, y0:y1] = np.zeros(np.shape(tetro.form))
+    y0 -= 1
+    y1 -= 1
+    Game.Grille[x0:x1, y0:y1] = tetro.form
+    tetro.y0 -= 1
+    tetro.y1 -= 1
+    Play(Game, tetro)
+>>>>>>> 7814518cf516fd827645eb68666e57c52989131c:Tetris/Tetris.py
 
 
 ################################################################################
@@ -226,6 +244,7 @@ def Line(Game):
     pass
 
 
+<<<<<<< HEAD:Tetris/T.py
 type = ''
 tetro = Tetromino('')
 
@@ -244,6 +263,12 @@ def Partie():
     global type, tetro
     #while tetro.type == type: tetro = Tetromino()
     type = tetro.type
+=======
+tetro = Tetromino()
+
+
+def Partie():
+>>>>>>> 7814518cf516fd827645eb68666e57c52989131c:Tetris/Tetris.py
     PartieTermine = Play(CurrentGame, tetro)
     if not PartieTermine:
         Affiche(CurrentGame)

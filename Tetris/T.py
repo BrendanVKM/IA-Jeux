@@ -3,6 +3,7 @@ import numpy as np
 import random
 import time
 import tkinter as tk
+import math
 
 #################################################################################
 #
@@ -73,6 +74,7 @@ class Tetromino:
             self.__init__(random.choice(['I', 'O', 'T', 'J', 'L', 'S', 'Z']))
         self.x0, self.x1 = 12 // 2 - len(self.form) + 1, 12 // 2 + 1
         self.y0, self.y1 = 22 - len(self.form[0]) - 1, 22 - 1
+        self.rotation = 0
 
     def rotate(self):
         self.form = np.flip(self.form, 0).transpose()
@@ -80,6 +82,7 @@ class Tetromino:
         l0, l1 = len(self.form) // 2, len(self.form[0]) // 2
         self.x0, self.x1 = x2 - len(self.form) + 1, x2 + 1
         self.y0, self.y1 = y2 - len(self.form[0]) - 1, y2 - 1
+        self.rotation +=1
 
     def move(self, d = 1):
         self.x0 += d
@@ -295,7 +298,7 @@ def score(game):
 def Simulate(game,tetro):
     global type
     g = game
-    s = -1000000
+    s = -math.inf
     if type == 'I':
         for i in  range(-2,5):
             game2 = game.copy()
@@ -307,7 +310,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-2,3):
+        for i in  range(-5,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -315,10 +318,8 @@ def Simulate(game,tetro):
             if score(game2) > s :
                 s =score(game2)
                 g = game2
-        print(g.Grille)
 
     elif type == 'O':
-        print("jsp")
         for i in  range(-4,5):
             game2 = game.copy()
             tetro.reset()
@@ -339,7 +340,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-3,6):
+        for i in  range(-4,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -349,7 +350,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-2,6):
+        for i in  range(-3,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -359,7 +360,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-2,7):
+        for i in  range(-4,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -367,8 +368,6 @@ def Simulate(game,tetro):
             if score(game2) > s :
                 s =score(game2)
                 g = game2
-        tetro.reset()
-        tetro.rotate()
 
     elif type == 'J':
         for i in  range(-3,5):
@@ -381,7 +380,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-3,6):
+        for i in  range(-4,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -391,7 +390,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-2,6):
+        for i in  range(-3,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -401,7 +400,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-2,7):
+        for i in  range(-4,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -421,7 +420,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-3,6):
+        for i in  range(-4,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -431,7 +430,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-2,6):
+        for i in  range(-3,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -441,7 +440,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-2,7):
+        for i in  range(-4,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -461,7 +460,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-3,6):
+        for i in  range(-4,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -471,7 +470,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-2,6):
+        for i in  range(-3,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -481,7 +480,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-2,7):
+        for i in  range(-4,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -501,7 +500,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-3,6):
+        for i in  range(-4,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -511,7 +510,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-2,6):
+        for i in  range(-3,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -521,7 +520,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-2,7):
+        for i in  range(-4,5):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -549,8 +548,7 @@ def Partie():
         CurrentGame = Simulate(CurrentGame,tetro)
 
     if not PartieTermine:
-        CurrentGame.Score = score(CurrentGame)
-        print(type)
+        CurrentGame.Score += score(CurrentGame)
         Affiche(CurrentGame)
         # rappelle la fonction Partie() dans 30ms
         # entre temps laisse l'OS réafficher l'interface

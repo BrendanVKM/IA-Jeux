@@ -40,16 +40,21 @@ class Tetromino:
              [1]]
         O = [[2, 2],
              [2, 2]]
-        T = [[3, 3, 3],
-             [0, 3, 0]]
-        J = [[4, 4, 4],
-             [0, 0, 4]]
-        L = [[5, 5, 5],
-             [5, 0, 0]]
-        S = [[0, 6, 6],
-             [6, 6, 0]]
-        Z = [[7, 7, 0],
-             [0, 7, 7]]
+        T = [[3, 0],
+             [3, 3],
+             [3, 0]]
+        J = [[4, 4],
+             [4, 0],
+             [4, 0]]
+        L = [[5, 0],
+             [5, 0],
+             [5, 5]]
+        S = [[6, 0],
+             [6, 6],
+             [0, 6]]
+        Z = [[0, 7],
+             [7, 7],
+             [7, 0]]
         if Tetro == 'I':
             self.form = I
         elif Tetro == 'O':
@@ -76,13 +81,13 @@ class Tetromino:
         self.x0, self.x1 = x2 - len(self.form) + 1, x2 + 1
         self.y0, self.y1 = y2 - len(self.form[0]) - 1, y2 - 1
 
-    def left(self):
-        self.x0 -= 1
-        self.x1 -= 1
+    def move(self, d = 1):
+        self.x0 += d
+        self.x1 += d
 
-    def right(self):
-        self.x0 += 1
-        self.x1 += 1
+    def reset(self):
+        self.x0, self.x1 = 12 // 2 - len(self.form) + 1, 12 // 2 + 1
+        self.y0, self.y1 = 22 - len(self.form[0]) - 1, 22 - 1
 
 
 GInit = np.array(Data, dtype=np.int8)
@@ -214,43 +219,341 @@ def Play(Game, tetro):
     tetro.y1 -= 1
     x0, x1 = tetro.x0, tetro.x1
     y0, y1 = tetro.y0, tetro.y1
+    Play(Game, tetro)
 
 
 ################################################################################
 
 CurrentGame = GameInit.copy()
-
-
-def Line(Game):
-    pass
-
-
 type = ''
 tetro = Tetromino('')
 
 
-def keydown(e):
-    global tetro, CurrentGame
-    CurrentGame.Grille[tetro.x0:tetro.x1, tetro.y0:tetro.y1] = np.zeros(np.shape(tetro.form))
-    if e.char == 'w':
+def totalheight(game):
+    hauteurstotal = []
+    for i in range(1, len(game.Grille) - 1):
+        casep = 0
+        casev = 0
+        for j in range(len(game.Grille[i])):
+            if 0 < game.Grille[i][j] < 8:
+                casep += 1
+                if casev != 0:
+                    casep += casev
+            elif game.Grille[i][j] == 0:
+                casev += 1
+        hauteurstotal.append(casep)
+
+        # print (Dat)
+    return hauteurstotal
+
+
+def completeline(game):
+    completeline = 0
+
+    for i in range(len(game.Grille)):
+        ligne = 0
+        if 0 not in game.Grille[i] and 5 in game.Grille[i]:
+            ligne += 1
+        completeline += ligne
+    return (completeline)
+
+
+def holes(game):
+    hole = 0
+    for i in range(len(game.Grille)):
+        casep = 0
+        casev = 0
+        for j in range(len(game.Grille[i])):
+            if 0 < game.Grille[i][j] < 8:
+                hole += casev
+                casev = 0
+            elif game.Grille[i][j] == 0:
+                casev += 1
+
+        hole += casep
+
+    return (hole)
+
+
+def bumpiness(game):
+    hauteurcolone = totalheight(game)
+    difference = []
+    for i in range(len(hauteurcolone) - 1):
+        difference.append(abs(hauteurcolone[i] - hauteurcolone[i + 1]))
+    return (sum(difference))
+
+
+def score(game):
+    HauteurTotal = totalheight(game)
+    HauteurTotal = sum(HauteurTotal)
+    LigneComplete = completeline(game)
+    trous = holes(game)
+    bosse = bumpiness(game)
+    Score = -HauteurTotal + LigneComplete - trous - bosse
+    return (Score)
+
+def Simulate(game,tetro):
+    global type
+    g = game
+    s = -1000000
+    if type == 'I':
+        for i in  range(-2,5):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
         tetro.rotate()
-    if e.char == 'a':
-        tetro.left()
-    if e.char == 'd':
-        tetro.right()
+        for i in  range(-4,6):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
 
+    elif type == 'O':
+        print("jsp")
+        for i in  range(-4,5):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
 
-tetro = Tetromino()
+    elif type == 'T':
+        for i in range(-3, 5):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s:
+                s = score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-3,6):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-2,6):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-2,7):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
 
+    elif type == 'J':
+        for i in  range(-3,5):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-3,6):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-2,6):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-2,7):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+
+    elif type == 'L':
+        for i in  range(-3,5):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-3,6):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-2,6):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-2,7):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+
+    elif type == 'S':
+        for i in  range(-3,5):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-3,6):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-2,6):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-2,7):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+
+    elif type == 'Z':
+        for i in  range(-3,5):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-3,6):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-2,6):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+        tetro.reset()
+        tetro.rotate()
+        for i in  range(-2,7):
+            game2 = game.copy()
+            tetro.reset()
+            tetro.move(i)
+            Play(game2, tetro)
+            if score(game2) > s :
+                s =score(game2)
+                g = game2
+
+    return g
 
 def Partie():
-    PartieTermine = Play(CurrentGame, tetro)
+    global type, CurrentGame
+    tetro = Tetromino('')
+    PartieTermine = False
+    while tetro.type == type: tetro = Tetromino()
+    type = tetro.type
+    for x in range(1, np.shape(CurrentGame.Grille)[1]):
+        if np.count_nonzero(CurrentGame.Grille[1:-1, x] > 0) == np.shape(CurrentGame.Grille)[0] - 2:
+            CurrentGame.Grille = np.delete(CurrentGame.Grille, x, 1)
+            CurrentGame.Grille = np.hstack(
+                (CurrentGame.Grille, [[8], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [8]]))
+    if np.count_nonzero(CurrentGame.Grille[tetro.x0:tetro.x1, tetro.y0:tetro.y1] > 0) != 0:
+        PartieTermine = True
+    else:
+        CurrentGame = Simulate(CurrentGame,tetro)
+        print(tetro.form)
+
     if not PartieTermine:
+        CurrentGame.Score = score(CurrentGame)
         Affiche(CurrentGame)
-        Play(CurrentGame, tetro)
         # rappelle la fonction Partie() dans 30ms
         # entre temps laisse l'OS réafficher l'interface
-        Window.after(500, Partie)
+        Window.after(50, Partie)
     else:
         AfficheScore(CurrentGame)
 
@@ -258,7 +561,6 @@ def Partie():
 #####################################################################################
 #
 #  Mise en place de l'interface - ne pas toucher
-Window.bind("<KeyPress>", keydown)
 AfficherPage(0)
 Window.after(50, Partie)
 Window.mainloop()

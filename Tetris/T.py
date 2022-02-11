@@ -307,7 +307,7 @@ def Simulate(game,tetro):
                 g = game2
         tetro.reset()
         tetro.rotate()
-        for i in  range(-4,6):
+        for i in  range(-2,3):
             game2 = game.copy()
             tetro.reset()
             tetro.move(i)
@@ -315,6 +315,7 @@ def Simulate(game,tetro):
             if score(game2) > s :
                 s =score(game2)
                 g = game2
+        print(g.Grille)
 
     elif type == 'O':
         print("jsp")
@@ -546,10 +547,10 @@ def Partie():
         PartieTermine = True
     else:
         CurrentGame = Simulate(CurrentGame,tetro)
-        print(tetro.form)
 
     if not PartieTermine:
         CurrentGame.Score = score(CurrentGame)
+        print(type)
         Affiche(CurrentGame)
         # rappelle la fonction Partie() dans 30ms
         # entre temps laisse l'OS réafficher l'interface

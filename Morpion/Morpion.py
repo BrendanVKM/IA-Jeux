@@ -1,6 +1,8 @@
-import numpy as np
-import random
 import tkinter as tk
+from tkinter import messagebox
+import random
+import numpy as np
+import time
 
 ###############################################################################
 # création de la fenetre principale  - ne pas toucher
@@ -54,118 +56,158 @@ Grille = [[0, 0, 0],
 Grille = np.array(Grille)
 Grille = Grille.transpose()  # pour avoir x,y
 
+HAUTEUR = Grille.shape[1]
+LARGEUR = Grille.shape[0]
 
 ###############################################################################
 #
 # gestion du joueur humain et de l'IA
-# VOTRE CODE ICI
+score_joueur = 0
+score_IA = 0
+couleur = "blue"
+debut_partie = False
 
 
-def end():
-    dd = 0
-    dg = 0
-    for i in range(len(Grille)):
-        if np.array_equal(Grille[i, :], np.ones(3)): return 1
-        if np.array_equal(Grille[:, i
-                          ], np.ones(3)): return 1
-        if Grille[i][i] == 1: dd += 1
-        if Grille[len(Grille) - 1 - i][i] == 1: dg += 1
-    if dg == 3 or dd == 3: return 1
+def WIN():
+    global score_joueur, score_IA, couleur
+    if Grille[0][0] == 1 and Grille[0][1] == 1 and Grille[0][2] == 1:
+        return True
+    elif Grille[1][0] == 1 and Grille[1][1] == 1 and Grille[1][2] == 1:
+        return True
+    elif Grille[2][0] == 1 and Grille[2][1] == 1 and Grille[2][2] == 1:
+        return True
+    elif Grille[0][0] == 2 and Grille[0][1] == 2 and Grille[0][2] == 2:
+        return True
+    elif Grille[1][0] == 2 and Grille[1][1] == 2 and Grille[1][2] == 2:
+        return True
+    elif Grille[2][0] == 2 and Grille[2][1] == 2 and Grille[2][2] == 2:
+        return True
+    elif Grille[0][0] == 1 and Grille[1][0] == 1 and Grille[2][0] == 1:
+        return True
+    elif Grille[0][1] == 1 and Grille[1][1] == 1 and Grille[2][1] == 1:
+        return True
+    elif Grille[0][2] == 1 and Grille[1][2] == 1 and Grille[2][2] == 1:
+        return True
+    elif Grille[0][1] == 2 and Grille[1][1] == 2 and Grille[2][1] == 2:
+        return True
+    elif Grille[0][2] == 2 and Grille[1][2] == 2 and Grille[2][2] == 2:
+        return True
+    elif Grille[0][0] == 2 and Grille[1][0] == 2 and Grille[2][0] == 2:
+        return True
+    elif Grille[0][0] == 1 and Grille[1][1] == 1 and Grille[2][2] == 1:
+        return True
+    elif Grille[0][0] == 2 and Grille[1][1] == 2 and Grille[2][2] == 2:
+        return True
+    elif Grille[0][2] == 1 and Grille[1][1] == 1 and Grille[2][0] == 1:
+        return True
+    elif Grille[0][2] == 2 and Grille[1][1] == 2 and Grille[2][0] == 2:
+        return True
+    return False
 
-    dd = 0
-    dg = 0
-    for i in range(len(Grille)):
-        if np.array_equal(Grille[i, :], np.full(3, 2)): return 2
-        if np.array_equal(Grille[:, i
-                          ], np.full(3, 2)): return 2
-        if Grille[i][i] == 2: dd += 1
-        if Grille[len(Grille) - 1 - i][i] == 2: dg += 1
-    if dg == 3 or dd == 3: return 2
 
-    if np.array_equal(np.where(Grille == 2, 1, Grille), np.ones(Grille.shape)):
-        return 3
-    return 0
+def matchnul():
+    global Grille, HAUTEUR, LARGEUR, couleur, vainqueur
+    for x in range(LARGEUR):
+        for y in range(HAUTEUR):
+            if Grille[x][y] == 0:
+                return False
+    return True
 
 
-def PlayP(x, y):
-    Grille[x][y] = 1
-    Dessine()
+def finpartie():
+    global Grille, debut_partie
+    if WIN() or matchnul():
+        return True
+    else:
+        return False
 
 
-def PlayIA():
+def tour_IA():
+    global Grille, HAUTEUR, LARGEUR
+    choix_poss = []
+    for x in range(LARGEUR):
+        for y in range(HAUTEUR):
+            if Grille[x][y] == 0:
+                choix_poss.append((x, y))
+    return choix_poss
+
+
+def choix_IA(L):
     global Grille
-    Grille[SimulateIA()[1][0]][SimulateIA()[1][1]] = 2
-    Dessine()
+    choix = random.randrange(len(L))
+    Grille[L[choix][0]][L[choix][1]] = 2
+    return [L[choix][0], L[choix][1]]
 
 
-def SimulateIA():
+def Play(x, y):
     global Grille
-    if end != 0:
-        if end() == 2:
-            return ("IA", None)
-        elif end() == 1:
-            return ("GO", None)
 
-    L = [(x, y) for x in range(len(Grille)) for y in range(len(Grille)) if Grille[x][y] == 0]
-    Result = []
-    g = "IA"
+    if Grille[x][y] == 0:
+        return True
+    else:
+        return False
+
+
+def JoueurSimuleIA():
+    global Grille
+    if finpartie():
+        if WIN():
+            return ("j", None)
+        else:
+            return ("p", None)
+    L = tour_IA()
+    results = []
+    a = "j"
     for K in L:
         Grille[K[0]][K[1]] = 2
-        R = SimulateP()
-        if g == "IA":
-            g = R[0]
-            Result.append((g, K))
-        elif g == "GO":
-            if R[0] == "P":
-                g = R[0]
-                Result.append((g, K))
+        R = JoueurSimuleHumain()
+        if a == "j":
+            a = R[0]
+            results.append((a, K))
+        elif a == "p":
+            if R[0] == "ia":
+                a = R[0]
+                results.append((a, K))
         Grille[K[0]][K[1]] = 0
-    return Result[-1]
+    return results[-1]
 
 
-def SimulateP():
+def JoueurSimuleHumain():
     global Grille
-    if end != 0:
-        if end() == 2:
-            return ("J", None)
-        elif end() == 1:
-            return ("GO", None)
-
-    L = [(x, y) for x in range(len(Grille)) for y in range(len(Grille)) if Grille[x][y] == 0]
-    Result = []
-    g = "P"
+    if finpartie():
+        if WIN():
+            return ("ia", None)
+        else:
+            return ("p", None)
+        return results
+    L = tour_IA()
+    results = []
+    a = "ia"
     for K in L:
-        Grille[K[0]][K[1]] = 2
-        R = SimulateP()
-        if g == "P":
-            g = R[0]
-            Result.append((g, K))
-        elif g == "GO":
-            if R[0] == "IA":
-                g = R[0]
-                Result.append((g, K))
+        Grille[K[0]][K[1]] = 1
+        R = JoueurSimuleIA()
+        if a == "ia":
+            a = R[0]
+            results.append((a, K))
+        elif a == "p":
+            if R[0] == "j":
+                a = R[0]
+                results.append((a, K))
         Grille[K[0]][K[1]] = 0
-    return Result[-1]
+    return results[-1]
 
 
 ################################################################################
-#    
+#
 # Dessine la grille de jeu
 
-def Dessine(PartieGagnee=0):
+def Dessine(PartieGagnee=False):
     ## DOC canvas : http://tkinter.fdex.eu/doc/caw.html
     canvas.delete("all")
-    color = "blue"
-    if PartieGagnee == 1:
-        color = "red"
-    elif PartieGagnee == 2:
-        color = "yellow"
-    elif PartieGagnee == 3:
-        color = "white"
 
     for i in range(4):
-        canvas.create_line(i * 100, 0, i * 100, 300, fill=color, width="4")
-        canvas.create_line(0, i * 100, 300, i * 100, fill=color, width="4")
+        canvas.create_line(i * 100, 0, i * 100, 300, fill=couleur, width="4")
+        canvas.create_line(0, i * 100, 300, i * 100, fill=couleur, width="4")
 
     for x in range(3):
         for y in range(3):
@@ -176,42 +218,55 @@ def Dessine(PartieGagnee=0):
                 canvas.create_line(xc + 90, yc + 10, xc + 10, yc + 90, fill="red", width="4")
             if (Grille[x][y] == 2):
                 canvas.create_oval(xc + 10, yc + 10, xc + 90, yc + 90, outline="yellow", width="4")
-
-    canvas.create_text(LARG - 20, HAUT - 10, text=str(Score_P) + "/" + str(Score_IA), fill="yellow")
+    canvas.create_text(LARG - 20, HAUT - 10, text=str(score_joueur) + "/" + str(score_IA), fill="yellow")
 
 
 ####################################################################################
 #
 #  fnt appelée par un clic souris sur la zone de dessin
-Begin = True
-Score_IA = 0
-Score_P = 0
-
 
 def MouseClick(event):
-    global Begin, Grille, Score_IA, Score_P
-    if Begin == True:
-        Grille = np.zeros((3, 3))
+    global debut_partie, Grille, couleur, score_IA, score_joueur, r
+
+    if debut_partie:
+        Grille = [[0, 0, 0],
+                  [0, 0, 0],
+                  [0, 0, 0]]
         Dessine()
-        Begin = False
+        debut_partie = False
+        return
+
     Window.focus_set()
     x = event.x // 100  # convertit une coordonée pixel écran en coord grille de jeu
     y = event.y // 100
     if ((x < 0) or (x > 2) or (y < 0) or (y > 2)): return
-    if Grille[x][y] == 1 or Grille[x][y] == 2: return
-    PlayP(x, y)  # gestion du joueur humain
-    if end() != 0:
-        Begin = True
-        Score_P += 1 if end() == 1 else 0
-        Dessine((end()))
+
+
+    if not (Play(x, y)):
+        return
+
+    Grille[x][y] = 1
+    couleur = "blue"
+    Dessine()
+
+    if finpartie():
+        couleur = "white"
+        if WIN():
+            score_joueur += 1
+            couleur = "red"
+        debut_partie = True
     else:
-        r = SimulateIA()
+        r = JoueurSimuleIA()
         L = r[1]
         Grille[L[0]][L[1]] = 2
-        if end() != 0:
-            Begin = True
-            Score_IA += 1 if end() == 2 else 0
-            Dessine(end())
+        if finpartie():
+            couleur = "white"
+            if WIN():
+                score_IA += 1
+                couleur = "yellow"
+            debut_partie = True
+        Dessine()
+
 
 
 canvas.bind('<ButtonPress-1>', MouseClick)
